@@ -17,11 +17,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         // need something here
+        ArrayList<Employee> emp_list = new ArrayList<>();
 
         adapter = new MyBaseAdapter(this, emp_list);
         listview = (ListView) findViewById(R.id.listView1) ;
         listview.setAdapter(adapter);
-        listview.setOnItemClickListener((AdapterView.OnItemClickListener)adapter);
+        listview.setOnItemClickListener((new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> v1, View v2, int i, long l) {
+
+            }
+        }));
     }
     @Override
     public void onClick(View v){
@@ -34,10 +40,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()){
             case R.id.btn_inc:
                 // need something here
+                edit_salary.setText(Integer.toString(10000));
                 break;
 
             case R.id.btn_dec:
                 // need something here
+                edit_salary.setText(Integer.toString(-10000));
                 break;
 
             case R.id.btn_store:

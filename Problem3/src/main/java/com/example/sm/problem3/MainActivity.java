@@ -28,10 +28,24 @@ public class MainActivity extends AppCompatActivity {
 
 
         for(CustomerThread ct : list){
-
+/*
             try {
                 // need something here
-            } catch (InterruptedException e) { }
+                new Thread() {
+                    public void run() {
+                        while (true) {
+                            try {
+                                Thread.sleep((int) (Math.random() * 1000));
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        ct.work();
+                    }
+                };
+
+            } catch (InterruptedException e) { }*/
         }
 
         manager.sort();
@@ -51,7 +65,9 @@ class CustomerThread extends Thread{
     CustomerThread(Customer customer){
         this.customer = customer;
     }
+
     // need something here
+
 }
 
 abstract class Person{
@@ -71,6 +87,10 @@ class Customer extends Person{
     }
 
     // need something here
+    @Override
+    void work() {
+
+    }
 }
 
 
@@ -83,7 +103,14 @@ class Manager extends Person{
 
     void sort(){ // 직접 소팅 알고리즘을 이용하여 코딩해야함. 자바 기본 정렬 메소드 이용시 감
 
+        int temp;
+
         // need something here
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9 - i; j++) {
+                // 버블소트를 할 예정
+            }
+        }
 
     }
 

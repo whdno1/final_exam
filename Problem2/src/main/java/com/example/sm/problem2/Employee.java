@@ -20,4 +20,13 @@ public class Employee extends Person implements Payment{
     }
 
     // need something here
+    @Override
+    public void increase() {
+
+    }
+
+    @Override
+    public void decrease() {
+
+    }
 }

@@ -11,6 +11,8 @@
         <activity android:name="com.example.igx.problem1.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT"/>
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
