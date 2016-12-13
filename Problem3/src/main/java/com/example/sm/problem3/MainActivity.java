@@ -17,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
 
         ArrayList<CustomerThread> list = new ArrayList<CustomerThread>();
         Manager manager = new Manager();
-
+/*
         for(int i = 0 ; i < 10 ; i++){
             Customer customer = new Customer("Customer" + i);
             CustomerThread ct = new CustomerThread(customer);
@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
             manager.add_customer(customer);
             ct.start();
         }
-
+*/
 
         for(CustomerThread ct : list){
 /*

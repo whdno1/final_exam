@@ -9,6 +9,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.support.v4.app.ActivityCompat;
@@ -23,7 +24,119 @@ import android.widget.Toast;
 
 import static android.R.id.message;
 
-public class MainActivity extends AppCompatActivity implements SensorEventListener /* implements Something1, Something2 */ {
+public class MainActivity extends AppCompatActivity implements SensorEventListener, LocationListener /* implements Something1, Something2 */ {
+
+    Context mContext;
+
+    boolean isGPSEnabled = false;       // 현재 GPS 사용유무
+    boolean isNetworkEnabled = false;   // 현재 네트워크 사용유무
+    boolean isGetLocation = false;      // GPS 상태값
+
+    Location loc;
+    double lat;     // 위도
+    double lon;     // 경도
+
+    private static final long MIN_DISTANCE_UPDATES = 10;        // GPS 정보 업데이트 거리 10미터
+    private static final long MIN_TIME_UPDATES = 1000 * 60 * 1; // GPS 정보 업데이트 시간 1/1000
+
+    protected LocationManager locationManager;
+
+    public Location getLocation(Location location) {
+        try {
+            locationManager = (LocationManager) mContext.getSystemService(LOCATION_SERVICE);
+            isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+            if (!isGPSEnabled && !isNetworkEnabled) {
+            } else {
+                this.isGetLocation = true;
+                if (isNetworkEnabled) {
+                    try {
+                        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_UPDATES, MIN_DISTANCE_UPDATES, this);
+                    } catch (SecurityException e) {
+                        // 권한 에러
+                    }
+                    if (locationManager != null) {
+                        try {
+                            location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                        } catch (SecurityException e) {
+                            // 권한 에러
+                        }
+                        if (location != null) {
+                            // 위도, 경도 저장
+                            lat = location.getLatitude();
+                            lon = location.getLongitude();
+                        }
+                    }
+                }
+
+                if (isGPSEnabled) {
+                    if (location == null) {
+                        try {
+                            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_UPDATES, MIN_DISTANCE_UPDATES, this);
+                        } catch (SecurityException e) {
+                            // 권한 에러
+                        }
+                        if (locationManager != null) {
+                            try {
+                                location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                            } catch (SecurityException e) {
+                                // 권한 에러
+                            }
+                            if (location != null) {
+                                lat = location.getLatitude();
+                                lon = location.getLongitude();
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return location;
+    }
+
+    /**
+     * 위도값
+     **/
+    public double getLatitude(Location location) {
+        if (location != null) {
+            lat = location.getLatitude();
+        }
+        return lat;
+    }
+
+    /**
+     * 경도값
+     **/
+    public double getLongitude(Location location) {
+        if (location != null) {
+            lon = location.getLongitude();
+        }
+        return lon;
+    }
+
+    @Override
+    public void onProviderEnabled(String a) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String a) {
+
+    }
+
+    @Override
+    public void onLocationChanged(Location loc) {
+
+    }
+
+    @Override
+    public void onStatusChanged(String a, int b, Bundle bun) {
+
+    }
 
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
@@ -31,7 +144,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private Sensor mLinear;
     private Sensor mGravity;
 
-    String str_loc = "";
     String str_accel = "";
     String str_gyro = "";
     String str_lin = "";
@@ -71,15 +183,17 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, APP_PERMISSIONS_GRANTED);
             }
         } else {
-
+            // 항상 동의 시
         }
 
         btn_getLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 sensor = 0;
+                mContext = MainActivity.this;
+                getLocation(loc);
                 text_selectedType.setText("LOCATION");
-                text_selectedData.setText(text_selectedType.getText().toString());
+                text_selectedData.setText(Double.toString(getLatitude(loc)) +" / " +  Double.toString(getLongitude(loc)));
             }
         });
 
@@ -156,9 +270,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         switch (requestCode) {
             case APP_PERMISSIONS_GRANTED : {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, "권한 동의 버튼 선택", Toast.LENGTH_LONG).show();
+                    // 동의 시
                 } else {
                     Toast.makeText(this, "권한 사용을 동의해야 이용가능", Toast.LENGTH_LONG).show();
+                    finish();
                 }
                 return;
             }
